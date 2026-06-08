@@ -861,34 +861,6 @@ mp.setPlayerState(
     MultiplayerState.Lives,
     3
 )
-sprites.onOverlap(
-    SpriteKind.Player,
-    SpriteKind.Enemy,
-    function (sprite, enemy) {
-
-        let player = mp.getPlayerBySprite(sprite)
-
-        mp.changePlayerStateBy(
-            player,
-            MultiplayerState.Lives,
-            -1
-        )
-
-        if (mp.getPlayerState(
-            player,
-            MultiplayerState.Lives
-        ) <= 0) {
-
-            sprite.destroy(effects.fire, 500)
-
-            mp.setPlayerState(
-                player,
-                MultiplayerState.Lives,
-                0
-            )
-        }
-    }
-)
 // ===== Adventure Game V3 - Stage 3 =====
 // Combat ownership foundations
 
@@ -909,4 +881,22 @@ for (let p of [
     mp.setPlayerState(p, MultiplayerState.DirectionOwned, 1)
     mp.setPlayerState(p, MultiplayerState.BoomerangOwned, 0)
     mp.setPlayerState(p, MultiplayerState.ShootingOwned, 0)
+}
+
+// ===== Adventure Game V3 - Stage 4 =====
+// Stable multiplayer stats framework
+
+namespace MultiplayerState {
+    export const Kills = MultiplayerState.create()
+    export const Deaths = MultiplayerState.create()
+}
+
+for (let p of [
+    mp.playerSelector(mp.PlayerNumber.One),
+    mp.playerSelector(mp.PlayerNumber.Two),
+    mp.playerSelector(mp.PlayerNumber.Three),
+    mp.playerSelector(mp.PlayerNumber.Four)
+]) {
+    mp.setPlayerState(p, MultiplayerState.Kills, 0)
+    mp.setPlayerState(p, MultiplayerState.Deaths, 0)
 }
