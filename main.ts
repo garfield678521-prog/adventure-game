@@ -794,19 +794,16 @@ game.onUpdateInterval(randint(1000, 4000), function () {
 })
 mp.setPlayerSprite(mp.playerSelector(mp.PlayerNumber.One), mySprite)
 
-let p2 = sprites.create(img`
-    ...
-`, SpriteKind.Player)
+let p2 = sprites.create(mySprite.image.clone(), SpriteKind.Player)
+let p3 = sprites.create(mySprite.image.clone(), SpriteKind.Player)
+let p4 = sprites.create(mySprite.image.clone(), SpriteKind.Player)
+
+tiles.placeOnTile(p2, tiles.getTileLocation(11, 4))
+tiles.placeOnTile(p3, tiles.getTileLocation(12, 4))
+tiles.placeOnTile(p4, tiles.getTileLocation(13, 4))
+
 mp.setPlayerSprite(mp.playerSelector(mp.PlayerNumber.Two), p2)
-
-let p3 = sprites.create(img`
-    ...
-`, SpriteKind.Player)
 mp.setPlayerSprite(mp.playerSelector(mp.PlayerNumber.Three), p3)
-
-let p4 = sprites.create(img`
-    ...
-`, SpriteKind.Player)
 mp.setPlayerSprite(mp.playerSelector(mp.PlayerNumber.Four), p4)
 mp.moveWithButtons(mp.playerSelector(mp.PlayerNumber.One))
 mp.moveWithButtons(mp.playerSelector(mp.PlayerNumber.Two))
@@ -843,25 +840,25 @@ mp.setPlayerState(
 info.setLife(3)
 mp.setPlayerState(
     mp.playerSelector(mp.PlayerNumber.One),
-    MultiplayerState.life,
+    MultiplayerState.Lives,
     3
 )
 
 mp.setPlayerState(
     mp.playerSelector(mp.PlayerNumber.Two),
-    MultiplayerState.life,
+    MultiplayerState.Lives,
     3
 )
 
 mp.setPlayerState(
     mp.playerSelector(mp.PlayerNumber.Three),
-    MultiplayerState.life,
+    MultiplayerState.Lives,
     3
 )
 
 mp.setPlayerState(
     mp.playerSelector(mp.PlayerNumber.Four),
-    MultiplayerState.life,
+    MultiplayerState.Lives,
     3
 )
 sprites.onOverlap(
@@ -873,22 +870,43 @@ sprites.onOverlap(
 
         mp.changePlayerStateBy(
             player,
-            MultiplayerState.life,
+            MultiplayerState.Lives,
             -1
         )
 
         if (mp.getPlayerState(
             player,
-            MultiplayerState.life
+            MultiplayerState.Lives
         ) <= 0) {
 
             sprite.destroy(effects.fire, 500)
 
             mp.setPlayerState(
                 player,
-                MultiplayerState.life,
+                MultiplayerState.Lives,
                 0
             )
         }
     }
 )
+// ===== Adventure Game V3 - Stage 3 =====
+// Combat ownership foundations
+
+namespace MultiplayerState {
+    export const WeaponOwned = MultiplayerState.create()
+    export const DirectionOwned = MultiplayerState.create()
+    export const BoomerangOwned = MultiplayerState.create()
+    export const ShootingOwned = MultiplayerState.create()
+}
+
+for (let p of [
+    mp.playerSelector(mp.PlayerNumber.One),
+    mp.playerSelector(mp.PlayerNumber.Two),
+    mp.playerSelector(mp.PlayerNumber.Three),
+    mp.playerSelector(mp.PlayerNumber.Four)
+]) {
+    mp.setPlayerState(p, MultiplayerState.WeaponOwned, 1)
+    mp.setPlayerState(p, MultiplayerState.DirectionOwned, 1)
+    mp.setPlayerState(p, MultiplayerState.BoomerangOwned, 0)
+    mp.setPlayerState(p, MultiplayerState.ShootingOwned, 0)
+}
