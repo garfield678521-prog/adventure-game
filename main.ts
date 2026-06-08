@@ -329,7 +329,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
             }
         }
     } else if (Weapon == 4) {
-    	
+
     }
 })
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.greenSwitchUp, function (sprite, location) {
@@ -340,7 +340,7 @@ scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.greenSwitchUp, function (
     game.splash("The Earth Shook back in the Jungle")
     scene.cameraShake(5, 1000)
 })
-function Start () {
+function Start() {
     sprites.destroyAllSpritesOfKind(SpriteKind.Player)
     info.setScore(5)
     Chest_amount = 5
@@ -412,7 +412,7 @@ scene.onOverlapTile(SpriteKind.Player, tileUtil.door7, function (sprite, locatio
     tileUtil.loadConnectedMap(MapConnectionKind.Door2)
     tiles.placeOnTile(mySprite, tiles.getTileLocation(8, 14))
 })
-function Secret () {
+function Secret() {
     if (Yeeeeee == 6432) {
         game.splash("Correct secret tile map unlocked")
         tiles.setCurrentTilemap(tilemap`level10`)
@@ -421,7 +421,7 @@ function Secret () {
         game.splash("Wrong Password Idiot")
     }
 }
-function Level_Create () {
+function Level_Create() {
     scene.setBackgroundColor(7)
     Temple = tilemap`level5`
     Temple_Inside = tilemap`level6`
@@ -439,7 +439,7 @@ scene.onOverlapTile(SpriteKind.Player, tileUtil.door15, function (sprite, locati
     tileUtil.loadConnectedMap(MapConnectionKind.Door4)
     tiles.placeOnTile(mySprite, tiles.getTileLocation(8, 14))
 })
-function Player_Spawn () {
+function Player_Spawn() {
     mySprite = sprites.create(img`
         . . . . . . f f f f . . . . . . 
         . . . . f f f b b f f f . . . . 
@@ -492,7 +492,7 @@ scene.onOverlapTile(SpriteKind.Player, tileUtil.door10, function (sprite, locati
     tileUtil.loadConnectedMap(MapConnectionKind.Door4)
     tiles.placeOnTile(mySprite, tiles.getTileLocation(17, 17))
 })
-function Menu () {
+function Menu() {
     if (Menu_Number == 1) {
         Weapon = game.askForNumber("", 1)
     } else if (Menu_Number == 2) {
@@ -870,44 +870,4 @@ sprites.onOverlap(
             )
         }
     }
-)
-info.changeScoreBy(1)
-let player = mp.getPlayerBySprite(sprite)
-
-mp.changePlayerStateBy(
-    player,
-    MultiplayerState.score,
-    1
-)
-let player = mp.getPlayerBySprite(sprite)
-mp.setPlayerState(
-    player,
-    MultiplayerState.Weapon,
-    selectedWeapon
-)
-Player_direction = 1
-mp.setPlayerState(
-    player,
-    MultiplayerState.Direction,
-    1
-)
-let direction = mp.getPlayerState(
-    player,
-    MultiplayerState.Direction
-)
-pause(3000)
-
-let newSprite = sprites.create(playerImage, SpriteKind.Player)
-
-mp.setPlayerSprite(player, newSprite)
-
-tiles.placeOnRandomTile(
-    newSprite,
-    sprites.castle.tileGrass2
-)
-
-mp.setPlayerState(
-    player,
-    MultiplayerState.life,
-    3
 )
