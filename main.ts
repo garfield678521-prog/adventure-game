@@ -1,3 +1,24 @@
+// Adventure Game V3 - Stage 1
+// Multiplayer Foundation Plan
+//
+// Baseline extracted from latest ZIP.
+// Stage 1 goals:
+// - Prepare for 4-player support
+// - Define multiplayer state namespace
+// - Keep current gameplay intact
+// - No map or asset changes
+//
+// Next stages:
+// Stage 2: lives/deaths/respawns
+// Stage 3: combat ownership
+// Stage 4: world integration
+// Stage 5: cleanup/polish
+
+namespace MultiplayerState {
+    export const Lives = MultiplayerState.create()
+    export const Respawning = MultiplayerState.create()
+}
+
 namespace SpriteKind {
     export const Map = SpriteKind.create()
     export const Food2 = SpriteKind.create()
