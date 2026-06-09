@@ -775,3 +775,202 @@ game.onUpdateInterval(randint(1000, 4000), function () {
         }
     }
 })
+mp.setPlayerState(
+    mp.playerSelector(mp.PlayerNumber.One),
+    MultiplayerState.PlayerLives,
+    3
+)
+mp.setPlayerSprite(mp.playerSelector(mp.PlayerNumber.One), mySprite)
+
+let p2 = sprites.create(mySprite.image.clone(), SpriteKind.Player)
+let p3 = sprites.create(mySprite.image.clone(), SpriteKind.Player)
+let p4 = sprites.create(mySprite.image.clone(), SpriteKind.Player)
+
+tiles.placeOnTile(p2, tiles.getTileLocation(11, 4))
+tiles.placeOnTile(p3, tiles.getTileLocation(12, 4))
+tiles.placeOnTile(p4, tiles.getTileLocation(13, 4))
+
+mp.setPlayerSprite(mp.playerSelector(mp.PlayerNumber.Two), p2)
+mp.setPlayerSprite(mp.playerSelector(mp.PlayerNumber.Three), p3)
+mp.setPlayerSprite(mp.playerSelector(mp.PlayerNumber.Four), p4)
+mp.moveWithButtons(mp.playerSelector(mp.PlayerNumber.One))
+mp.moveWithButtons(mp.playerSelector(mp.PlayerNumber.Two))
+mp.moveWithButtons(mp.playerSelector(mp.PlayerNumber.Three))
+mp.moveWithButtons(mp.playerSelector(mp.PlayerNumber.Four))
+namespace MultiplayerState {
+    export const Weapon = MultiplayerState.create()
+    export const Direction = MultiplayerState.create()
+    export const Boomerang = MultiplayerState.create()
+}
+mp.setPlayerState(
+    mp.playerSelector(mp.PlayerNumber.One),
+    MultiplayerState.Weapon,
+    1
+)
+
+mp.setPlayerState(
+    mp.playerSelector(mp.PlayerNumber.Two),
+    MultiplayerState.Weapon,
+    1
+)
+
+mp.setPlayerState(
+    mp.playerSelector(mp.PlayerNumber.Three),
+    MultiplayerState.Weapon,
+    1
+)
+
+mp.setPlayerState(
+    mp.playerSelector(mp.PlayerNumber.Four),
+    MultiplayerState.Weapon,
+    1
+)
+info.setLife(3)
+mp.setPlayerState(
+    mp.playerSelector(mp.PlayerNumber.One),
+    MultiplayerState.PlayerLives,
+    3
+)
+
+mp.setPlayerState(
+    mp.playerSelector(mp.PlayerNumber.Two),
+    MultiplayerState.PlayerLives,
+    3
+)
+
+mp.setPlayerState(
+    mp.playerSelector(mp.PlayerNumber.Three),
+    MultiplayerState.PlayerLives,
+    3
+)
+
+mp.setPlayerState(
+    mp.playerSelector(mp.PlayerNumber.Four),
+    MultiplayerState.PlayerLives,
+    3
+)
+// ===== Adventure Game V3 - Stage 3 =====
+// Combat ownership foundations
+
+namespace MultiplayerState {
+    export const WeaponOwned = MultiplayerState.create()
+    export const DirectionOwned = MultiplayerState.create()
+    export const BoomerangOwned = MultiplayerState.create()
+    export const ShootingOwned = MultiplayerState.create()
+}
+
+for (let p of [
+    mp.playerSelector(mp.PlayerNumber.One),
+    mp.playerSelector(mp.PlayerNumber.Two),
+    mp.playerSelector(mp.PlayerNumber.Three),
+    mp.playerSelector(mp.PlayerNumber.Four)
+]) {
+    mp.setPlayerState(p, MultiplayerState.WeaponOwned, 1)
+    mp.setPlayerState(p, MultiplayerState.DirectionOwned, 1)
+    mp.setPlayerState(p, MultiplayerState.BoomerangOwned, 0)
+    mp.setPlayerState(p, MultiplayerState.ShootingOwned, 0)
+}
+
+// ===== Adventure Game V3 - Stage 4 =====
+// Stable multiplayer stats framework
+
+namespace MultiplayerState {
+    export const Kills = MultiplayerState.create()
+    export const Deaths = MultiplayerState.create()
+}
+
+for (let p of [
+    mp.playerSelector(mp.PlayerNumber.One),
+    mp.playerSelector(mp.PlayerNumber.Two),
+    mp.playerSelector(mp.PlayerNumber.Three),
+    mp.playerSelector(mp.PlayerNumber.Four)
+]) {
+    mp.setPlayerState(p, MultiplayerState.Kills, 0)
+    mp.setPlayerState(p, MultiplayerState.Deaths, 0)
+}
+
+
+// ===== Stage 8 =====
+// Kill / Death tracking (safe version)
+
+namespace MultiplayerState {
+
+
+}
+
+
+// ===== Stage 10 =====
+// Multiplayer Combat Conversion Framework
+
+namespace MultiplayerState {
+    export const WeaponState = MultiplayerState.create()
+    export const DirectionState = MultiplayerState.create()
+}
+
+for (let p of [
+    mp.playerSelector(mp.PlayerNumber.One),
+    mp.playerSelector(mp.PlayerNumber.Two),
+    mp.playerSelector(mp.PlayerNumber.Three),
+    mp.playerSelector(mp.PlayerNumber.Four)
+]) {
+    mp.setPlayerState(p, MultiplayerState.WeaponState, 1)
+    mp.setPlayerState(p, MultiplayerState.DirectionState, 1)
+}
+
+// Next step:
+// Replace global Weapon and Player_direction usage
+// with per-player MultiplayerState values.
+
+
+// ===== Stage 11 =====
+// Individual Lives & Respawn Foundation
+
+namespace MultiplayerState {
+    export const PlayerLives = MultiplayerState.create()
+}
+
+for (let p of [
+    mp.playerSelector(mp.PlayerNumber.One),
+    mp.playerSelector(mp.PlayerNumber.Two),
+    mp.playerSelector(mp.PlayerNumber.Three),
+    mp.playerSelector(mp.PlayerNumber.Four)
+]) {
+    mp.setPlayerState(p, MultiplayerState.PlayerLives, 3)
+}
+
+// Future:
+// - Per-player respawn timers
+// - Respawn locations
+// - Individual game over handling
+
+
+// ===== Stage 13 =====
+// Multiplayer Ownership Helper (Clean Version)
+
+function getMPPlayer(sprite: Sprite): mp.Player {
+    return mp.getPlayerBySprite(sprite)
+}
+
+function addKill(attacker: Sprite) {
+    let p = getMPPlayer(attacker)
+
+    if (p) {
+        mp.changePlayerStateBy(
+            p,
+            MultiplayerState.Kills,
+            1
+        )
+    }
+}
+
+function addDeath(victim: Sprite) {
+    let p = getMPPlayer(victim)
+
+    if (p) {
+        mp.changePlayerStateBy(
+            p,
+            MultiplayerState.Deaths,
+            1
+        )
+    }
+}
