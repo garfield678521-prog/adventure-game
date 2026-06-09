@@ -39,7 +39,8 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     myMinimap = minimap.minimap(MinimapScale.Quarter, 2, 0)
     mySprite2 = sprites.create(minimap.getImage(myMinimap), SpriteKind.Map)
     mySprite2.setPosition(scene.cameraProperty(CameraProperty.X), scene.cameraProperty(CameraProperty.Y))
-    controller.moveSprite(mySprite, 0, 0)
+    mySprite.vx = 0
+    mySprite.vy = 0
     minimap.includeSprite(myMinimap, mySprite, MinimapSpriteScale.Quadruple)
 })
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.stairLadder, function (sprite, location) {
@@ -480,7 +481,7 @@ function Player_Spawn() {
         . . . . . f f . . f f . . . . . 
         `, SpriteKind.Player)
     tiles.placeOnTile(mySprite, tiles.getTileLocation(10, 4))
-    controller.moveSprite(mySprite)
+
     scene.cameraFollowSprite(mySprite)
 }
 controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
@@ -507,7 +508,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Ammmmmmo, function (sprite, othe
 })
 controller.B.onEvent(ControllerButtonEvent.Released, function () {
     sprites.destroy(mySprite2)
-    controller.moveSprite(mySprite)
+
 })
 scene.onOverlapTile(SpriteKind.Player, tileUtil.door10, function (sprite, location) {
     tileUtil.loadConnectedMap(MapConnectionKind.Door4)
