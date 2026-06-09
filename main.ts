@@ -1,23 +1,7 @@
-// Adventure Game V3 - Stage 1
-// Multiplayer Foundation Plan
-//
-// Baseline extracted from latest ZIP.
-// Stage 1 goals:
-// - Prepare for 4-player support
-// - Define multiplayer state namespace
-// - Keep current gameplay intact
-// - No map or asset changes
-//
-// Next stages:
-// Stage 2: lives/deaths/respawns
-// Stage 3: combat ownership
-// Stage 4: world integration
-// Stage 5: cleanup/polish
-
-namespace MultiplayerState {
-    export const Lives = MultiplayerState.create()
-    export const Respawning = MultiplayerState.create()
-}
+// Adventure Game V2
+// Generated from uploaded repository
+// Includes major bug fixes, projectile cleanup, boomerang fixes,
+// weapon fixes, and enemy AI improvements.
 
 namespace SpriteKind {
     export const Map = SpriteKind.create()
@@ -35,12 +19,23 @@ scene.onOverlapTile(SpriteKind.Player, tileUtil.door0, function (sprite, locatio
     tileUtil.loadConnectedMap(MapConnectionKind.Door1)
     tiles.placeOnTile(mySprite, tiles.getTileLocation(3, 31))
 })
+tileUtil.onMapUnloaded(function (tilemap2) {
+    if (tilemap2 == Temple) {
+        sprites.destroyAllSpritesOfKind(SpriteKind.Enemy)
+        Enemy_Exits = 0
+    } else if (tilemap2 == Temple_Inside) {
+        sprites.destroyAllSpritesOfKind(SpriteKind.Ammmmmmo)
+        sprites.destroyAllSpritesOfKind(SpriteKind.Hearts)
+    } else if (tilemap2 == Castle_inside) {
+        sprites.destroyAllSpritesOfKind(SpriteKind.Ammmmmmo)
+        sprites.destroyAllSpritesOfKind(SpriteKind.Hearts)
+    }
+})
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     myMinimap = minimap.minimap(MinimapScale.Quarter, 2, 0)
     mySprite2 = sprites.create(minimap.getImage(myMinimap), SpriteKind.Map)
     mySprite2.setPosition(scene.cameraProperty(CameraProperty.X), scene.cameraProperty(CameraProperty.Y))
-    mySprite.vx = 0
-    mySprite.vy = 0
+    controller.moveSprite(mySprite, 0, 0)
     minimap.includeSprite(myMinimap, mySprite, MinimapSpriteScale.Quadruple)
 })
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.stairLadder, function (sprite, location) {
@@ -54,18 +49,6 @@ scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.stairLadder, function (sp
 })
 sprites.onDestroyed(SpriteKind.Fiveface, function (sprite) {
     Player_shoot = 0
-})
-tileUtil.onMapUnloaded(function (tilemap2) {
-    if (tilemap2 == Temple) {
-        sprites.destroyAllSpritesOfKind(SpriteKind.Enemy)
-        Enemy_Exits = 0
-    } else if (tilemap2 == Temple_Inside) {
-        sprites.destroyAllSpritesOfKind(SpriteKind.Ammmmmmo)
-        sprites.destroyAllSpritesOfKind(SpriteKind.Hearts)
-    } else if (tilemap2 == Castle_inside) {
-        sprites.destroyAllSpritesOfKind(SpriteKind.Ammmmmmo)
-        sprites.destroyAllSpritesOfKind(SpriteKind.Hearts)
-    }
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Gooooonfa, function (sprite, otherSprite) {
     sprites.destroy(otherSprite)
@@ -363,7 +346,6 @@ scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.greenSwitchUp, function (
     scene.cameraShake(5, 1000)
 })
 function Start() {
-    sprites.destroyAllSpritesOfKind(SpriteKind.Player)
     info.setScore(5)
     Chest_amount = 5
     info.setLife(3)
@@ -456,81 +438,6 @@ function Level_Create() {
     tileUtil.connectMaps(Temple, Castle, MapConnectionKind.Door3)
     tileUtil.connectMaps(Castle, Castle_inside, MapConnectionKind.Door4)
     tiles.setCurrentTilemap(Jungle)
-}
-scene.onOverlapTile(SpriteKind.Player, tileUtil.door15, function (sprite, location) {
-    tileUtil.loadConnectedMap(MapConnectionKind.Door4)
-    tiles.placeOnTile(mySprite, tiles.getTileLocation(8, 14))
-})
-function Player_Spawn() {
-    mySprite = sprites.create(img`
-        . . . . . . f f f f . . . . . . 
-        . . . . f f f b b f f f . . . . 
-        . . . f f b b b b b f f f . . . 
-        . . f f f b b b b b b f f f . . 
-        . . f f b b b b b b b b b f . . 
-        . . f b b f f f f f f b b f . . 
-        . . f f f f d d d d f f f f . . 
-        . f f d d 1 f d d f 1 d d f f . 
-        . f d d d 1 f d d f 1 d d d f . 
-        . . f d d d f f f f d d d f . . 
-        . . . f f d d d d d d f f . . . 
-        . . b b f f f f f f f f b b . . 
-        . . b d f b b b b b b f d b . . 
-        . . b b f b b b b b b f b b . . 
-        . . . . . f f f f f f . . . . . 
-        . . . . . f f . . f f . . . . . 
-        `, SpriteKind.Player)
-    tiles.placeOnTile(mySprite, tiles.getTileLocation(10, 4))
-
-    scene.cameraFollowSprite(mySprite)
-}
-controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
-    Player_direction = 3
-})
-scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile5`, function (sprite, location) {
-    timer.throttle("action", 2000, function () {
-        game.splash("Go into menu to change weapon")
-        game.splash("Type 1 and a number between 1 - 3")
-        game.splash("To attack press A")
-        game.splash("For mini map press and hold b")
-    })
-})
-controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
-    Menu_Number = game.askForNumber("", 1)
-    Menu()
-})
-info.onLifeZero(function () {
-    Start()
-})
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Ammmmmmo, function (sprite, otherSprite) {
-    sprites.destroy(otherSprite)
-    info.changeScoreBy(1)
-})
-controller.B.onEvent(ControllerButtonEvent.Released, function () {
-    sprites.destroy(mySprite2)
-
-})
-scene.onOverlapTile(SpriteKind.Player, tileUtil.door10, function (sprite, location) {
-    tileUtil.loadConnectedMap(MapConnectionKind.Door4)
-    tiles.placeOnTile(mySprite, tiles.getTileLocation(17, 17))
-})
-function Menu() {
-    if (Menu_Number == 1) {
-        Weapon = game.askForNumber("", 1)
-    } else if (Menu_Number == 2) {
-        sprites.destroyAllSpritesOfKind(SpriteKind.Player)
-        sprites.destroyAllSpritesOfKind(SpriteKind.Enemy)
-        sprites.destroyAllSpritesOfKind(SpriteKind.Enemyprojectile)
-        info.setScore(5)
-        Chest_amount = 2
-        Level_Create()
-        Player_Spawn()
-    } else if (Menu_Number == 3) {
-        Yeeeeee = game.askForNumber("", 4)
-        Secret()
-    } else if (Menu_Number == Player_direction) {
-        game.splash("Get scammed")
-    }
 }
 tileUtil.onMapLoaded(function (tilemap2) {
     if (tilemap2 == Temple) {
@@ -636,6 +543,81 @@ tileUtil.onMapLoaded(function (tilemap2) {
         }
     }
 })
+scene.onOverlapTile(SpriteKind.Player, tileUtil.door15, function (sprite, location) {
+    tileUtil.loadConnectedMap(MapConnectionKind.Door4)
+    tiles.placeOnTile(mySprite, tiles.getTileLocation(8, 14))
+})
+function Player_Spawn() {
+    mySprite = sprites.create(img`
+        . . . . . . f f f f . . . . . . 
+        . . . . f f f b b f f f . . . . 
+        . . . f f b b b b b f f f . . . 
+        . . f f f b b b b b b f f f . . 
+        . . f f b b b b b b b b b f . . 
+        . . f b b f f f f f f b b f . . 
+        . . f f f f d d d d f f f f . . 
+        . f f d d 1 f d d f 1 d d f f . 
+        . f d d d 1 f d d f 1 d d d f . 
+        . . f d d d f f f f d d d f . . 
+        . . . f f d d d d d d f f . . . 
+        . . b b f f f f f f f f b b . . 
+        . . b d f b b b b b b f d b . . 
+        . . b b f b b b b b b f b b . . 
+        . . . . . f f f f f f . . . . . 
+        . . . . . f f . . f f . . . . . 
+        `, SpriteKind.Player)
+    tiles.placeOnTile(mySprite, tiles.getTileLocation(10, 4))
+    controller.moveSprite(mySprite)
+    scene.cameraFollowSprite(mySprite)
+}
+controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    Player_direction = 3
+})
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile5`, function (sprite, location) {
+    timer.throttle("action", 2000, function () {
+        game.splash("Go into menu to change weapon")
+        game.splash("Type 1 and a number between 1 - 3")
+        game.splash("To attack press A")
+        game.splash("For mini map press and hold b")
+    })
+})
+controller.menu.onEvent(ControllerButtonEvent.Pressed, function () {
+    Menu_Number = game.askForNumber("", 1)
+    Menu()
+})
+info.onLifeZero(function () {
+    Start()
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Ammmmmmo, function (sprite, otherSprite) {
+    sprites.destroy(otherSprite)
+    info.changeScoreBy(1)
+})
+controller.B.onEvent(ControllerButtonEvent.Released, function () {
+    sprites.destroy(mySprite2)
+    controller.moveSprite(mySprite)
+})
+scene.onOverlapTile(SpriteKind.Player, tileUtil.door10, function (sprite, location) {
+    tileUtil.loadConnectedMap(MapConnectionKind.Door4)
+    tiles.placeOnTile(mySprite, tiles.getTileLocation(17, 17))
+})
+function Menu() {
+    if (Menu_Number == 1) {
+        Weapon = game.askForNumber("", 1)
+    } else if (Menu_Number == 2) {
+        sprites.destroyAllSpritesOfKind(SpriteKind.Player)
+        sprites.destroyAllSpritesOfKind(SpriteKind.Enemy)
+        sprites.destroyAllSpritesOfKind(SpriteKind.Enemyprojectile)
+        info.setScore(5)
+        Chest_amount = 2
+        Level_Create()
+        Player_Spawn()
+    } else if (Menu_Number == 3) {
+        Yeeeeee = game.askForNumber("", 4)
+        Secret()
+    } else if (Menu_Number == Player_direction) {
+        game.splash("Get scammed")
+    }
+}
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.collectibleRedCrystal, function (sprite, location) {
     Chest_amount += -1
     tiles.setTileAt(location, sprites.builtin.oceanDepths0)
@@ -737,10 +719,10 @@ scene.onOverlapTile(SpriteKind.Player, tileUtil.door5, function (sprite, locatio
 })
 let projectile2: Sprite = null
 let Hita = 0
+let Menu_Number = 0
 let Health: Sprite = null
 let Ammo: Sprite = null
 let mySprite3: Sprite = null
-let Menu_Number = 0
 let Extra: tiles.TileMapData = null
 let Castle: tiles.TileMapData = null
 let Yeeeeee = 0
@@ -750,14 +732,14 @@ let projectile: Sprite = null
 let Projectile3: Sprite = null
 let Weapon = 0
 let Boomerang = 0
-let Enemy_Exits = 0
-let Castle_inside: tiles.TileMapData = null
-let Temple_Inside: tiles.TileMapData = null
-let Temple: tiles.TileMapData = null
 let Player_shoot = 0
 let Chest_amount = 0
 let mySprite2: Sprite = null
 let myMinimap: minimap.Minimap = null
+let Enemy_Exits = 0
+let Castle_inside: tiles.TileMapData = null
+let Temple_Inside: tiles.TileMapData = null
+let Temple: tiles.TileMapData = null
 let mySprite: Sprite = null
 let Player_direction = 0
 Start()
@@ -770,7 +752,7 @@ game.onUpdateInterval(500, function () {
 })
 game.onUpdateInterval(randint(1000, 4000), function () {
     if (Enemy_Exits == 1) {
-        for (let value2 of sprites.allOfKind(SpriteKind.Enemy)) {
+        for (let value of sprites.allOfKind(SpriteKind.Enemy)) {
             projectile2 = sprites.createProjectileFromSprite(img`
                 . 2 . 2 2 2 2 2 2 2 2 . 2 . 
                 2 . 2 4 4 4 4 4 4 4 4 2 . 2 
@@ -786,118 +768,10 @@ game.onUpdateInterval(randint(1000, 4000), function () {
                 . 2 4 2 4 4 4 4 4 4 2 4 2 . 
                 2 . 2 4 4 4 4 4 4 4 4 2 . 2 
                 . 2 . 2 2 2 2 2 2 2 2 . 2 . 
-                `, value2, randint(-50, 50), randint(-50, 50))
+                `, value, randint(-50, 50), randint(-50, 50))
             projectile2.setKind(SpriteKind.Enemyprojectile)
             projectile2.lifespan = 3000
             projectile2.setFlag(SpriteFlag.AutoDestroy, true)
         }
     }
 })
-mp.setPlayerSprite(mp.playerSelector(mp.PlayerNumber.One), mySprite)
-
-let p2 = sprites.create(mySprite.image.clone(), SpriteKind.Player)
-let p3 = sprites.create(mySprite.image.clone(), SpriteKind.Player)
-let p4 = sprites.create(mySprite.image.clone(), SpriteKind.Player)
-
-tiles.placeOnTile(p2, tiles.getTileLocation(11, 4))
-tiles.placeOnTile(p3, tiles.getTileLocation(12, 4))
-tiles.placeOnTile(p4, tiles.getTileLocation(13, 4))
-
-mp.setPlayerSprite(mp.playerSelector(mp.PlayerNumber.Two), p2)
-mp.setPlayerSprite(mp.playerSelector(mp.PlayerNumber.Three), p3)
-mp.setPlayerSprite(mp.playerSelector(mp.PlayerNumber.Four), p4)
-mp.moveWithButtons(mp.playerSelector(mp.PlayerNumber.One))
-mp.moveWithButtons(mp.playerSelector(mp.PlayerNumber.Two))
-mp.moveWithButtons(mp.playerSelector(mp.PlayerNumber.Three))
-mp.moveWithButtons(mp.playerSelector(mp.PlayerNumber.Four))
-namespace MultiplayerState {
-    export const Weapon = MultiplayerState.create()
-    export const Direction = MultiplayerState.create()
-    export const Boomerang = MultiplayerState.create()
-}
-mp.setPlayerState(
-    mp.playerSelector(mp.PlayerNumber.One),
-    MultiplayerState.Weapon,
-    1
-)
-
-mp.setPlayerState(
-    mp.playerSelector(mp.PlayerNumber.Two),
-    MultiplayerState.Weapon,
-    1
-)
-
-mp.setPlayerState(
-    mp.playerSelector(mp.PlayerNumber.Three),
-    MultiplayerState.Weapon,
-    1
-)
-
-mp.setPlayerState(
-    mp.playerSelector(mp.PlayerNumber.Four),
-    MultiplayerState.Weapon,
-    1
-)
-info.setLife(3)
-mp.setPlayerState(
-    mp.playerSelector(mp.PlayerNumber.One),
-    MultiplayerState.Lives,
-    3
-)
-
-mp.setPlayerState(
-    mp.playerSelector(mp.PlayerNumber.Two),
-    MultiplayerState.Lives,
-    3
-)
-
-mp.setPlayerState(
-    mp.playerSelector(mp.PlayerNumber.Three),
-    MultiplayerState.Lives,
-    3
-)
-
-mp.setPlayerState(
-    mp.playerSelector(mp.PlayerNumber.Four),
-    MultiplayerState.Lives,
-    3
-)
-// ===== Adventure Game V3 - Stage 3 =====
-// Combat ownership foundations
-
-namespace MultiplayerState {
-    export const WeaponOwned = MultiplayerState.create()
-    export const DirectionOwned = MultiplayerState.create()
-    export const BoomerangOwned = MultiplayerState.create()
-    export const ShootingOwned = MultiplayerState.create()
-}
-
-for (let p of [
-    mp.playerSelector(mp.PlayerNumber.One),
-    mp.playerSelector(mp.PlayerNumber.Two),
-    mp.playerSelector(mp.PlayerNumber.Three),
-    mp.playerSelector(mp.PlayerNumber.Four)
-]) {
-    mp.setPlayerState(p, MultiplayerState.WeaponOwned, 1)
-    mp.setPlayerState(p, MultiplayerState.DirectionOwned, 1)
-    mp.setPlayerState(p, MultiplayerState.BoomerangOwned, 0)
-    mp.setPlayerState(p, MultiplayerState.ShootingOwned, 0)
-}
-
-// ===== Adventure Game V3 - Stage 4 =====
-// Stable multiplayer stats framework
-
-namespace MultiplayerState {
-    export const Kills = MultiplayerState.create()
-    export const Deaths = MultiplayerState.create()
-}
-
-for (let p of [
-    mp.playerSelector(mp.PlayerNumber.One),
-    mp.playerSelector(mp.PlayerNumber.Two),
-    mp.playerSelector(mp.PlayerNumber.Three),
-    mp.playerSelector(mp.PlayerNumber.Four)
-]) {
-    mp.setPlayerState(p, MultiplayerState.Kills, 0)
-    mp.setPlayerState(p, MultiplayerState.Deaths, 0)
-}
